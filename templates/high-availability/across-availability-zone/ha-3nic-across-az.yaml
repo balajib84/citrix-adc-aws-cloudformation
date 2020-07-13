@@ -12,6 +12,9 @@ Conditions:
   UsePooledLicense: !Equals
     - !Ref 'PooledLicense'
     - 'Yes'
+Description: This template provisions two Citrix ADC VPX in two different AWS Availability
+  Zones and configures them as High-Availabile. This template also gives an option
+  to allocate Pooled License to Citrix ADCs while provisioning.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -33,6 +36,7 @@ Metadata:
         Parameters:
           - ADCProductName
           - ADCProductVersion
+          - ADCCustomPassword
           - CitrixADCInstanceType
           - KeyPairName
           - PublishCloudwatchMetrics
@@ -59,6 +63,8 @@ Metadata:
           - Platform
           - VCPUEdition
     ParameterLabels:
+      ADCCustomPassword:
+        default: Citrix ADC management login Password
       ADCProductName:
         default: Citrix ADC Product Name
       ADCProductVersion:
@@ -174,6 +180,10 @@ Outputs:
       Name: !Sub '${AWS::StackName}-ServerSecurityGroupID'
     Value: !GetAtt 'SecurityGroupStack.Outputs.ServerSG'
 Parameters:
+  ADCCustomPassword:
+    Description: Strong password recommended
+    NoEcho: true
+    Type: String
   ADCProductName:
     AllowedValues:
       - Citrix ADC VPX - Customer Licensed
@@ -259,7 +269,7 @@ Parameters:
       - c5n.4xlarge
       - c5n.9xlarge
       - c5n.18xlarge
-    Default: m4.xlarge
+    Default: m5.xlarge
     Description: ''
     Type: String
   ClientENIEIP:
@@ -422,6 +432,7 @@ Resources:
         - ''
     Properties:
       Parameters:
+        ADCCustomPassword: !Ref 'ADCCustomPassword'
         ManagementSecurityGroupID: !GetAtt 'SecurityGroupStack.Outputs.ManagementSG'
         PrimaryClientPrivateIP: !GetAtt 'PrimaryCitrixADCStack.Outputs.ClientPrivateIP'
         PrimaryClientPublicSubnetID: !Ref 'PrimaryClientPublicSubnetID'
@@ -503,6 +514,7 @@ Resources:
     Condition: UsePooledLicense
     Properties:
       Parameters:
+        ADCCustomPassword: !Ref 'ADCCustomPassword'
         ADCInstanceID: !GetAtt 'PrimaryCitrixADCStack.Outputs.CitrixADCInstanceID'
         ADMIP: !Ref 'ADMIP'
         Bandwidth: !Ref 'Bandwidth'
@@ -553,6 +565,7 @@ Resources:
     Condition: UsePooledLicense
     Properties:
       Parameters:
+        ADCCustomPassword: !Ref 'ADCCustomPassword'
         ADCInstanceID: !GetAtt 'SecondaryCitrixADCStack.Outputs.CitrixADCInstanceID'
         ADMIP: !Ref 'ADMIP'
         Bandwidth: !Ref 'Bandwidth'

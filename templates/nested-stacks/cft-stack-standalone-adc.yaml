@@ -171,7 +171,7 @@ Parameters:
       - c5n.4xlarge
       - c5n.9xlarge
       - c5n.18xlarge
-    Default: m4.xlarge
+    Default: m5.xlarge
     Description: ''
     Type: String
   ClientENIEIP:
@@ -257,6 +257,16 @@ Resources:
       PrivateIpAddress: !GetAtt 'ManagementENI.PrimaryPrivateIpAddress'
     Type: AWS::EC2::EIPAssociation
   CitrixADCInstance:
+    Metadata:
+      PseudoDependsOn:
+        - !If
+          - AssignEIP2ManagementENI
+          - !Ref 'AssociateManagementEIP2ENI'
+          - ''
+        - !If
+          - AssignEIP2ClientENI
+          - !Ref 'AssociateClientEIP2ENI'
+          - ''
     Properties:
       IamInstanceProfile: !Ref 'CitrixADCInstanceProfile'
       ImageId: !Ref 'CitrixADCImageID'

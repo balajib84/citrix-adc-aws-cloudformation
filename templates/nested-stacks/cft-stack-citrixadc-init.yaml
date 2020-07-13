@@ -1,14 +1,23 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Outputs:
-  LambdaConfigureHASameAZRole:
+  ADCInitRole:
     Description: ''
     Export:
-      Name: !Sub '${AWS::StackName}-LambdaConfigureHASameAZRole'
-    Value: !Sub 'https://console.aws.amazon.com/iam/home#/roles/${LambdaConfigureHASameAZRole}'
+      Name: !Sub '${AWS::StackName}-ADCInitRole'
+    Value: !Sub 'https://console.aws.amazon.com/iam/home#/roles/${ADCInitRole}'
 Parameters:
   ADCCustomPassword:
     Description: Strong password recommended
     NoEcho: true
+    Type: String
+  ADCInstanceID:
+    Description: ''
+    Type: String
+  ManagementPrivateIP:
+    AllowedPattern: ()|(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})
+    ConstraintDescription: Must be a valid IP of the form x.x.x.x
+    Default: ''
+    Description: ''
     Type: String
   ManagementPrivateSubnetID:
     Description: ''
@@ -16,15 +25,6 @@ Parameters:
   ManagementSecurityGroupID:
     Description: ''
     Type: AWS::EC2::SecurityGroup::Id
-  PrimaryInstanceID:
-    Description: ''
-    Type: String
-  PrimaryManagementPrivateIP:
-    AllowedPattern: ()|(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})
-    ConstraintDescription: Must be a valid IP of the form x.x.x.x
-    Default: ''
-    Description: ''
-    Type: String
   S3BucketName:
     AllowedPattern: ()|^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     Description: ''
@@ -32,28 +32,19 @@ Parameters:
   S3Key:
     Description: ''
     Type: String
-  SecondaryInstanceID:
-    Description: ''
-    Type: String
-  SecondaryManagementPrivateIP:
-    AllowedPattern: ()|(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})
-    ConstraintDescription: Must be a valid IP of the form x.x.x.x
-    Default: ''
-    Description: ''
-    Type: String
 Resources:
-  ConfigureHASameAZFunction:
+  ADCInitFunction:
     Properties:
       Code:
         S3Bucket: !Ref 'S3BucketName'
         S3Key: !Ref 'S3Key'
-      Description: ConfigureHASameAZFunction
-      Handler: lambda_ha_same_az.lambda_handler
-      Role: !GetAtt 'LambdaConfigureHASameAZRole.Arn'
+      Description: ADCInitFunction
+      Handler: lambda_adc_init.lambda_handler
+      Role: !GetAtt 'ADCInitRole.Arn'
       Runtime: python3.6
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}-ConfigureHASameAZFunction'
+          Value: !Sub '${AWS::StackName}-ADCInitFunction'
       Timeout: 900
       VpcConfig:
         SecurityGroupIds:
@@ -61,16 +52,7 @@ Resources:
         SubnetIds:
           - !Ref 'ManagementPrivateSubnetID'
     Type: AWS::Lambda::Function
-  ConfigureLambda:
-    Properties:
-      CustomADCPassword: !Ref 'ADCCustomPassword'
-      PrimaryADCInstanceID: !Ref 'PrimaryInstanceID'
-      PrimaryADCPrivateNSIP: !Ref 'PrimaryManagementPrivateIP'
-      SecondaryADCInstanceID: !Ref 'SecondaryInstanceID'
-      SecondaryADCPrivateNSIP: !Ref 'SecondaryManagementPrivateIP'
-      ServiceToken: !GetAtt 'ConfigureHASameAZFunction.Arn'
-    Type: AWS::CloudFormation::CustomResource
-  LambdaConfigureHASameAZRole:
+  ADCInitRole:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
@@ -108,3 +90,10 @@ Resources:
             Version: '2012-10-17'
           PolicyName: citrixadc-lambda-policy
     Type: AWS::IAM::Role
+  AllocateADCInit:
+    Properties:
+      ADCInstanceID: !Ref 'ADCInstanceID'
+      ADCPrivateNSIP: !Ref 'ManagementPrivateIP'
+      CustomADCPassword: !Ref 'ADCCustomPassword'
+      ServiceToken: !GetAtt 'ADCInitFunction.Arn'
+    Type: AWS::CloudFormation::CustomResource

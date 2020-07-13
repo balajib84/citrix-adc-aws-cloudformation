@@ -63,26 +63,30 @@ Resources:
   GetVPCCIDRFunction:
     Properties:
       Code:
-        ZipFile: |-
+        ZipFile: |
           import json
           import cfnresponse
           import logging
           import boto3
+
+
           def handler(event, context):
               response_data = {}
               response_status = cfnresponse.FAILED
-              logging.info('Received event: {}'.format(json.dumps(event)))
-              if event['RequestType'] == 'Delete':
+              logging.info("Received event: {}".format(json.dumps(event)))
+              if event["RequestType"] == "Delete":
                   response_status = cfnresponse.SUCCESS
                   cfnresponse.send(event, context, response_status, response_data)
               else:
                   try:
-                      client = boto3.client('ec2')
-                      response = client.describe_vpcs(VpcIds=[event['ResourceProperties']['VPCID']])
-                      response_data['VPCCIDR'] = response['Vpcs'][0]['CidrBlock']
+                      client = boto3.client("ec2")
+                      response = client.describe_vpcs(
+                          VpcIds=[event["ResourceProperties"]["VPCID"]]
+                      )
+                      response_data["VPCCIDR"] = response["Vpcs"][0]["CidrBlock"]
                       response_status = cfnresponse.SUCCESS
                   except Exception as e:
-                      logging.error('failed to get default gateway IP: {}'.format(str(e)))
+                      logging.error("failed to get default gateway IP: {}".format(str(e)))
                       response_status = cfnresponse.FAILED
                   finally:
                       cfnresponse.send(event, context, response_status, response_data)

@@ -195,7 +195,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'PrimaryAvailabilityZone'
       CidrBlock: !Ref 'PrimaryClientSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-PrimaryClientSubnet'
@@ -205,7 +205,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'PrimaryAvailabilityZone'
       CidrBlock: !Ref 'PrimaryManagementSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-PrimaryManagementSubnet'
@@ -215,7 +215,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'PrimaryAvailabilityZone'
       CidrBlock: !Ref 'PrimaryServerSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-PrimaryServerSubnet'
@@ -335,7 +335,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'SecondaryAvailabilityZone'
       CidrBlock: !Ref 'SecondaryClientSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-SecondaryClientSubnet'
@@ -345,7 +345,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'SecondaryAvailabilityZone'
       CidrBlock: !Ref 'SecondaryManagementSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-SecondaryManagementSubnet'
@@ -355,7 +355,7 @@ Resources:
     Properties:
       AvailabilityZone: !Ref 'SecondaryAvailabilityZone'
       CidrBlock: !Ref 'SecondaryServerSubnetCIDR'
-      MapPublicIpOnLaunch: 'true'
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-SecondaryServerSubnet'
@@ -364,8 +364,8 @@ Resources:
   VPC:
     Properties:
       CidrBlock: !Ref 'VPCCIDR'
-      EnableDnsHostnames: 'true'
-      EnableDnsSupport: 'true'
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
       InstanceTenancy: !Ref 'VPCTenancy'
       Tags:
         - Key: Name

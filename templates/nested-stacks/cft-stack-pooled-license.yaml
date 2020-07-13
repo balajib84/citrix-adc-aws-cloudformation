@@ -6,6 +6,10 @@ Outputs:
       Name: !Sub '${AWS::StackName}-PooledLicenseRole'
     Value: !Sub 'https://console.aws.amazon.com/iam/home#/roles/${PooledLicenseRole}'
 Parameters:
+  ADCCustomPassword:
+    Description: Strong password recommended
+    NoEcho: true
+    Type: String
   ADCInstanceID:
     Description: ''
     Type: String
@@ -90,6 +94,7 @@ Resources:
       ADCPrivateNSIP: !Ref 'ManagementPrivateIP'
       ADMIP: !Ref 'ADMIP'
       Bandwidth: !Ref 'Bandwidth'
+      CustomADCPassword: !Ref 'ADCCustomPassword'
       LicensingMode: !Ref 'LicensingMode'
       Platform: !Ref 'Platform'
       PooledEdition: !Ref 'PooledEdition'

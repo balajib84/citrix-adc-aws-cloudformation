@@ -6,6 +6,10 @@ Outputs:
       Name: !Sub '${AWS::StackName}-LambdaConfigureHAAcrossAZRole'
     Value: !Sub 'https://console.aws.amazon.com/iam/home#/roles/${LambdaConfigureHAAcrossAZRole}'
 Parameters:
+  ADCCustomPassword:
+    Description: Strong password recommended
+    NoEcho: true
+    Type: String
   ManagementSecurityGroupID:
     Description: ''
     Type: AWS::EC2::SecurityGroup::Id
@@ -78,6 +82,7 @@ Resources:
     Type: AWS::Lambda::Function
   ConfigureLambda:
     Properties:
+      CustomADCPassword: !Ref 'ADCCustomPassword'
       PrimaryADCInstanceID: !Ref 'PrimaryInstanceID'
       PrimaryADCPrivateNSIP: !Ref 'PrimaryManagementPrivateIP'
       PrimaryADCPrivateVIP: !Ref 'PrimaryClientPrivateIP'
