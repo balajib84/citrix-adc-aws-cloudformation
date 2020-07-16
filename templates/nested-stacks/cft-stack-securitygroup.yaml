@@ -80,9 +80,7 @@ Resources:
               else:
                   try:
                       client = boto3.client("ec2")
-                      response = client.describe_vpcs(
-                          VpcIds=[event["ResourceProperties"]["VPCID"]]
-                      )
+                      response = client.describe_vpcs(VpcIds=[event["ResourceProperties"]["VPCID"]])
                       response_data["VPCCIDR"] = response["Vpcs"][0]["CidrBlock"]
                       response_status = cfnresponse.SUCCESS
                   except Exception as e:

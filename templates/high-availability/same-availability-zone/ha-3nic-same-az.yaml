@@ -117,7 +117,19 @@ Outputs:
     Description: Client VIP Public IP
     Export:
       Name: !Sub '${AWS::StackName}-ClientVIPIP'
-    Value: !GetAtt 'PrimaryCitrixADCStack.Outputs.ClientEIP'
+    Value: !GetAtt 'ConfigureHASameAZStack.Outputs.ClientEIP'
+  FloatingSNIP:
+    Description: floating SNIP which migrates between primary and secondary ADCs upon
+      failover
+    Export:
+      Name: !Sub '${AWS::StackName}-FloatingSNIP'
+    Value: !GetAtt 'ConfigureHASameAZStack.Outputs.FloatingSNIP'
+  FloatingVIP:
+    Description: floating VIP which migrates between primary and secondary ADCs upon
+      failover
+    Export:
+      Name: !Sub '${AWS::StackName}-FloatingVIP'
+    Value: !GetAtt 'ConfigureHASameAZStack.Outputs.FloatingVIP'
   ManagementSecurityGroupID:
     Description: Security Group associated with Management Interfaces
     Export:
@@ -359,6 +371,7 @@ Resources:
     Properties:
       Parameters:
         ADCCustomPassword: !Ref 'ADCCustomPassword'
+        ClientENIEIP: !Ref 'ClientENIEIP'
         ManagementPrivateSubnetID: !Ref 'ManagementPrivateSubnetID'
         ManagementSecurityGroupID: !GetAtt 'SecurityGroupStack.Outputs.ManagementSG'
         PrimaryInstanceID: !GetAtt 'PrimaryCitrixADCStack.Outputs.CitrixADCInstanceID'
@@ -413,7 +426,7 @@ Resources:
           - !Ref 'CitrixADCImageID'
         CitrixADCInstanceProfile: !GetAtt 'IAMRoleStack.Outputs.CitrixADCInstanceProfile'
         CitrixADCInstanceType: !Ref 'CitrixADCInstanceType'
-        ClientENIEIP: !Ref 'ClientENIEIP'
+        ClientENIEIP: 'No'
         ClientPrivateIP: ''
         ClientPublicSubnetID: !Ref 'ClientPublicSubnetID'
         ClientSecurityGroupID: !GetAtt 'SecurityGroupStack.Outputs.ClientSG'

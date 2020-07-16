@@ -257,16 +257,6 @@ Resources:
       PrivateIpAddress: !GetAtt 'ManagementENI.PrimaryPrivateIpAddress'
     Type: AWS::EC2::EIPAssociation
   CitrixADCInstance:
-    Metadata:
-      PseudoDependsOn:
-        - !If
-          - AssignEIP2ManagementENI
-          - !Ref 'AssociateManagementEIP2ENI'
-          - ''
-        - !If
-          - AssignEIP2ClientENI
-          - !Ref 'AssociateClientEIP2ENI'
-          - ''
     Properties:
       IamInstanceProfile: !Ref 'CitrixADCInstanceProfile'
       ImageId: !Ref 'CitrixADCImageID'
@@ -288,6 +278,7 @@ Resources:
     Type: AWS::EC2::Instance
   ClientEIP:
     Condition: AssignEIP2ClientENI
+    DependsOn: CitrixADCInstance
     Properties:
       Domain: vpc
       Tags:
@@ -310,6 +301,7 @@ Resources:
     Type: AWS::EC2::NetworkInterface
   ManagementEIP:
     Condition: AssignEIP2ManagementENI
+    DependsOn: CitrixADCInstance
     Properties:
       Domain: vpc
       Tags:
